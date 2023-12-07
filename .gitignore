@@ -4,3 +4,4 @@ deposits.csv
 paid_traffic.xlsx
 users.csv
 withdrawals.csv
+__pycache__
