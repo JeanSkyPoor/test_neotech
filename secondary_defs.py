@@ -54,10 +54,27 @@ def read_conversion_from_regist_to_deposit() -> pd.DataFrame:
         "conversion_from_regist_to_deposit.csv",
         usecols = df_columns.keys(),
         dtype = df_columns,
-        sep = ",",
+        sep = ";",
         parse_dates = [
             "date"
         ]
     )
 
     return df_conversion_from_regist_to_deposit
+
+
+def read_same_date_deposit() -> pd.DataFrame:
+    df_columns = {
+        "country": "category",
+        "new_customers_total": float,
+        "new_customers_total_same_date": float,
+        "same_date_deposit, %": float
+    }
+    df_same_date_deposit = pd.read_csv(
+        "same_date_deposit.csv",
+        usecols = df_columns.keys(),
+        dtype = df_columns,
+        sep = ";"
+    )
+
+    return df_same_date_deposit

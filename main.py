@@ -17,11 +17,13 @@ def read_total_data():
     df_registration_dynamic_by_country = read_registration_dynamic_by_country()
     df_first_deposits_dynamic_by_country = read_first_deposits_dynamic_by_country()
     df_conversion_from_regist_to_deposit = read_conversion_from_regist_to_deposit()
+    df_same_date_deposit = read_same_date_deposit()
 
     returned_tuple = (
         df_registration_dynamic_by_country,
         df_first_deposits_dynamic_by_country,
-        df_conversion_from_regist_to_deposit
+        df_conversion_from_regist_to_deposit,
+        df_same_date_deposit
     )
 
     return returned_tuple
@@ -120,6 +122,29 @@ def draw_graph_conversion_from_regist_to_deposit(
         use_container_width = True
     )
 
+def draw_graph_same_date_deposit(
+        df_same_date_deposit: pd.DataFrame
+) -> None:
+    fig = px.pie(
+        df_same_date_deposit,
+        values = "same_date_deposit, %",
+        names = "country",
+        title = "Same date deposit by country, aug 2023, percentage",
+        hole = 0.2
+    )
+
+    fig.update_traces(
+        textinfo = "label+value",
+        marker = dict(
+            line = dict(
+                width = 3
+            )
+        )
+    )
+    st.plotly_chart(
+        fig,
+        use_container_width = True
+    )
 
 ### FIRST ###
 
@@ -191,11 +216,11 @@ with st.expander(
         """
 Первоначально я думал, что надо просто кол-во людей, сделавших депозит в день группировки, поделить на кол-во новых регистраций.
 Таким образом, у меня получалась конверсия в 272%, что кажется явной ошибкой, потому что для бизнеса не несет никакой информации.
-Как пример: 2023-08-10 в стране Х было 100 новых регистраций и 100 пользователей совершили свой первый депозит. Получается по первой логике, у меня
-конверсия будет 100%, но, среди второй сотни может и не быть никого из первой сотни. Поэтому такой показатель неинформативен полностью
+Как пример: 2023-08-10 в стране Х было 100 новых регистраций и 100 пользователей совершили свой первый депозит. По этой логике, у меня
+конверсия будет 100%, но среди этой второй сотни, может и не быть никого из первой сотни. Поэтому такой показатель неинформативен полностью.
 """
     )
-    
+
     _,col,_ = st.columns(3)
     with col:
         st.image(
@@ -207,18 +232,27 @@ with st.expander(
 Поэтому было решено применить логику и здравый смысл. Суть заключается в том, что мы будем смотреть конверсию именно тех пользователей, которые зарегистрировались.
 Период в задании дан весь август, поэтому я "обрезал" даты регистрации и первого депозита целым августом.
 Например, возьмем 2023-08-01 и страну KZ. Мой % конверсии говорит о том, какой % пользователей, которые зарегистрировались 2023-08-01 в стране KZ
-совершили свой первый депозит за период целого августа. \n
-Возможно, моё решение некорректное и тут надо было сделать совершенно другое, однако с терминологией слабо знаком, из того, что смог найти и как-то
-интерпретировать, это скриншоты
+совершили свой первый депозит за период целого августа.
 """
     )
-    col_1, col_2 = st.columns(2)
-    with col_1:
-        st.image(
-            "description_1.jpg"
-        )
-    with col_2:
-        st.image(
-            "description_2.jpg"
+st.divider()
+
+col_1, col_2 = st.columns(2)
+with col_1:
+    graph, table = st.tabs(
+        [
+            "Graph",
+            "Table"
+        ]
+    )
+    with graph:
+        draw_graph_same_date_deposit(total_data[3])
+    with table:
+        st.dataframe(
+            total_data[3],
+            hide_index = True,
+            column_config = {
+                "date": st.column_config.DateColumn()
+            }
         )
 st.divider()
