@@ -39,3 +39,25 @@ def read_first_deposits_dynamic_by_country() -> pd.DataFrame:
     )
 
     return df_first_deposits_dynamic_by_country
+
+
+def read_conversion_from_regist_to_deposit() -> pd.DataFrame:
+    df_columns = {
+        "country": "category",
+        "date": str,
+        "new_customers_count": float,
+        "new_customers_with_deposit_count": float,
+        "conversion, %": float
+    }
+
+    df_conversion_from_regist_to_deposit = pd.read_csv(
+        "conversion_from_regist_to_deposit.csv",
+        usecols = df_columns.keys(),
+        dtype = df_columns,
+        sep = ",",
+        parse_dates = [
+            "date"
+        ]
+    )
+
+    return df_conversion_from_regist_to_deposit
