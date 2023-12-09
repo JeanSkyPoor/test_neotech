@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
+
 from secondary_defs import *
 
 st.set_page_config(
@@ -18,12 +20,14 @@ def read_total_data():
     df_first_deposits_dynamic_by_country = read_first_deposits_dynamic_by_country()
     df_conversion_from_regist_to_deposit = read_conversion_from_regist_to_deposit()
     df_same_date_deposit = read_same_date_deposit()
+    df_funnel_area = read_funnel_area()
 
     returned_tuple = (
         df_registration_dynamic_by_country,
         df_first_deposits_dynamic_by_country,
         df_conversion_from_regist_to_deposit,
-        df_same_date_deposit
+        df_same_date_deposit,
+        df_funnel_area
     )
 
     return returned_tuple
@@ -122,6 +126,7 @@ def draw_graph_conversion_from_regist_to_deposit(
         use_container_width = True
     )
 
+
 def draw_graph_same_date_deposit(
         df_same_date_deposit: pd.DataFrame
 ) -> None:
@@ -130,7 +135,7 @@ def draw_graph_same_date_deposit(
         values = "same_date_deposit, %",
         names = "country",
         title = "Same date deposit by country, aug 2023, percentage",
-        hole = 0.2
+        hole = 0.1
     )
 
     fig.update_traces(
@@ -145,6 +150,29 @@ def draw_graph_same_date_deposit(
         fig,
         use_container_width = True
     )
+
+
+def draw_graph_funnel_area(
+        df_selected_country: pd.DataFrame,
+        selected_country: str
+) -> None:
+    fig = go.Figure()
+    fig.add_trace(
+        go.Funnel(
+        x = df_selected_country["total_deposited, usd"],
+        y = df_selected_country["deposit_number"],
+        textinfo = "percent initial"
+        )
+    )
+    fig.update_layout(
+        title = f"First seven deposits by {selected_country}"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width = True
+    )
+
 
 ### FIRST ###
 
@@ -215,7 +243,7 @@ with st.expander(
     st.write(
         """
 Первоначально я думал, что надо просто кол-во людей, сделавших депозит в день группировки, поделить на кол-во новых регистраций.
-Таким образом, у меня получалась конверсия в 272%, что кажется явной ошибкой, потому что для бизнеса не несет никакой информации.
+Таким образом, у меня получалась конверсия в 272%, что кажется явной ошибкой.
 Как пример: 2023-08-10 в стране Х было 100 новых регистраций и 100 пользователей совершили свой первый депозит. По этой логике, у меня
 конверсия будет 100%, но среди этой второй сотни, может и не быть никого из первой сотни. Поэтому такой показатель неинформативен полностью.
 """
@@ -254,5 +282,35 @@ with col_1:
             column_config = {
                 "date": st.column_config.DateColumn()
             }
+        )
+
+with col_2:
+    df_funnel_area = total_data[4]
+    selected_country = st.selectbox(
+        "Select country",
+        options = sorted(
+            df_funnel_area["country"].unique()
+        )
+    )
+    
+    df_selected_country = df_funnel_area[
+        df_funnel_area["country"] == selected_country
+    ]
+
+    graph, table = st.tabs(
+            [
+                "Graph",
+                "Table"
+            ]
+        )
+    with graph:
+        draw_graph_funnel_area(
+            df_selected_country,
+            selected_country
+        )
+    with table:
+        st.dataframe(
+            df_selected_country,
+            hide_index = True
         )
 st.divider()

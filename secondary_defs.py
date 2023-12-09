@@ -78,3 +78,21 @@ def read_same_date_deposit() -> pd.DataFrame:
     )
 
     return df_same_date_deposit
+
+
+def read_funnel_area() -> pd.DataFrame:
+    df_columns = {
+        "country": "category",
+        "deposit_number": str,
+        "total_deposited, usd": float,
+        "total_deposited, usd MAX": float,
+        "%": float
+    }
+    df_funnel_area = pd.read_csv(
+        "funnel_area.csv",
+        usecols = df_columns.keys(),
+        dtype = df_columns,
+        sep = ";"
+    )
+
+    return df_funnel_area
