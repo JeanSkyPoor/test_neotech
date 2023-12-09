@@ -116,7 +116,7 @@ def draw_graph_conversion_from_regist_to_deposit(
     )
 
     fig.update_yaxes(
-        title_text = "Conversion, %",
+        title_text = "Conversion from registration to deposit, %",
         showspikes = True
 
     )
