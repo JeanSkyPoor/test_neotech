@@ -175,6 +175,9 @@ def draw_graph_funnel_area(
 
 
 ### FIRST ###
+st.title(
+    "Task 1"
+)
 
 graph, table = st.tabs(
     [
@@ -197,6 +200,9 @@ st.divider()
 
 
 ### SECOND ###
+st.title(
+    "Task 2"
+)
 
 graph, table = st.tabs(
     [
@@ -219,6 +225,10 @@ st.divider()
 
 
 ### THIRD ###
+
+st.title(
+    "Task 3"
+)
 
 graph, table = st.tabs(
     [
@@ -267,6 +277,10 @@ st.divider()
 
 col_1, col_2 = st.columns(2)
 with col_1:
+    st.title(
+        "Task 4"
+    )
+
     graph, table = st.tabs(
         [
             "Graph",
@@ -285,6 +299,10 @@ with col_1:
         )
 
 with col_2:
+    st.title(
+        "Task 5"
+    )
+    
     df_funnel_area = total_data[4]
     selected_country = st.selectbox(
         "Select country",
